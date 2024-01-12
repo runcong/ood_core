@@ -112,7 +112,11 @@ module OodCore
               kill -0 ${VNC_PID} 2>/dev/null || clean_up 1
 
               # Parse output for ports used
-              display=$(echo "${VNC_OUT}" | awk -F':' '/^Desktop/{print $NF}')
+              if [[ $(cat /etc/os-release | grep rocky) ]];then
+                  display=$(echo "${VNC_OUT}" | awk -F' ' '/Desktop/{print $6}' | cut -d':' -f2)
+              else
+                  display=$(echo "${VNC_OUT}" | awk -F':' '/^Desktop/{print $NF}')
+              fi 
               port=$((5900+display))
 
               echo "Successfully started VNC server on ${host}:${port}..."
